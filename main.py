@@ -233,5 +233,10 @@ def weather_forecast():
         return render_template('weather_forecast.html', is_logged_in=is_logged_in, error="Could not fetch weather data")
 
 
+@app.route('/health')
+def health_check():
+    return 'OK', 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
