@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Risk Assessment Booking{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-3">
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h2 class="h4 mb-0">Book a Housing Risk Assessment</h2>
+        </div>
+        <div class="card-body">
+            <!-- Booking Form -->
+            <p class="mb-4">Select a date for your housing risk assessment. Our experts will visit your property to evaluate potential environmental health risks.</p>
+            <form method="POST" action="{{ url_for('risk_assessments') }}">
+                <div class="form-group">
+                    <label for="booking_date">Select Preferred Date:</label>
+                    <input type="date" class="form-control w-50" id="booking_date" name="booking_date" min="{{ today_date }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Property Address:</label>
+                    <textarea class="form-control w-50" id="address" name="address" rows="3" required 
+                                placeholder="Enter the full address of the property to be assessed"></textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Book Assessment</button>
+            </form>
+ 
+            {% if bookings %}
+            <div class="mt-4">
+                <h3 class="h5">Your Current Bookings:</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Booking Date</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.booking_date.split('-')[2] }}/{{ booking.booking_date.split('-')[1] }}/{{ booking.booking_date.split('-')[0] }}</td>
+                            <td>{{ booking.address }}</td>
+                            <td>Confirmed</td>
+                            <td>
+                                <!-- Cancel Booking -->
+                                <form method="POST" action="{{ url_for('risk_assessments') }}" style="display: inline;">
+                                    <input type="hidden" name="cancel_booking_id" value="{{ booking.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                        Cancel Booking
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

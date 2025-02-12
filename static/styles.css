@@ -1,0 +1,156 @@
+/* All */
+.text-white a {
+    color: white;
+    text-decoration: underline;
+}
+
+.text-center-custom {
+    text-align: center;
+}
+
+/* Home Page CSS */
+.btn-outline-dark:hover {
+    color: white;
+}
+
+.btn {
+    text-decoration: none !important;
+}
+
+.btn:hover {
+    text-decoration: none !important;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Hero Section CSS */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('/static/images/Hero.avif') center/cover no-repeat;
+    min-height: 60vh;
+}
+
+.hero-section h1 {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-section .lead {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hero-section .btn {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Login and Register Page CSS */
+.top-right-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+/* Flash Message CSS */
+.flash-message {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    list-style-type: none;
+    z-index: 9999;
+    min-width: 300px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.container.mt-3 {
+    position: fixed;
+    pointer-events: none;
+}
+
+.alert {
+    pointer-events: auto;
+    margin-bottom: 0;
+}
+
+.close {
+    pointer-events: auto;
+}
+
+.close:hover {
+    opacity: 0.8;
+    text-decoration: none;
+    color: inherit;
+}
+                                                                                                                                                    
+.close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Allergy Section Button Styling */
+.allergy-btn {
+    color: #28a745 !important; 
+    text-decoration: none !important;
+}
+
+.allergy-btn:hover {
+    color: #218838 !important;
+    text-decoration: none !important;
+}
+
+.allergy-btn.collapsed {
+    color: #dc3545 !important;
+}
+
+.allergy-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Allergy Section CSS */
+.allergy-section {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    color: #000;
+    min-height: 200px;
+    transform: translateZ(0);
+    will-change: background-image;
+}
+
+.allergy-section .card-body {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 0.25rem;
+    padding: 1.25rem;
+    backdrop-filter: blur(2px);
+}
+
+.allergy-section:hover {
+    transition: background-image 0.2s ease-out;
+}
+
+/* Seasonal Background Classes */
+.allergy-section.spring {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/spring.jpg') center/cover;
+}
+
+.allergy-section.summer {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/summer.jpg') center/cover;
+}
+
+.allergy-section.fall {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/fall.jpg') center/cover;
+}
+
+.allergy-section.winter {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/winter.jpg') center/cover;
+}

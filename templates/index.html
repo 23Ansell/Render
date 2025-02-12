@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Health Advice Group{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section vh-60 d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">Welcome to Health Advice Group</h1>
+                <p class="lead mb-4">Supporting your environmental health journey with expert guidance and resources</p>
+                <a href="{{ url_for('advice') }}" class="btn btn-dark btn-lg px-4">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Section -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Weather & Allergy Tracking -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-cloud-sun mr-2"></i>
+                        Weather & Allergy Monitoring
+                    </h3>
+                    <p class="card-text">Stay informed about weather conditions and potential allergy triggers in your area. Plan your activities with our detailed forecasts.</p>
+                    <a href="{{ url_for('weather_forecast') }}" class="btn btn-outline-dark">Check Weather</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Home Risk Assessment
+                    </h3>
+                    <p class="card-text">Book a professional assessment of your living space to identify potential environmental health risks and get personalized recommendations.</p>
+                    <a href="{{ url_for('risk_assessments') }}" class="btn btn-outline-dark">Book Assessment</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Seasonal Health Tips -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-leaf mr-2"></i>
+                        Seasonal Health Guide
+                    </h3>
+                    <p class="card-text">Discover season-specific health tips and learn how to manage environmental conditions throughout the year.</p>
+                    <a href="{{ url_for('advice') }}" class="btn btn-outline-dark">View Guide</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Tracking -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Health Tracking Tools
+                    </h3>
+                    <p class="card-text">Monitor your environmental health indicators and track your progress with our specialized tracking tools.</p>
+                    <a href="{{ url_for('health_tracking_tool') }}" class="btn btn-outline-dark">Start Tracking</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="bg-dark text-white py-5 mt-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Take Control of Your Environmental Health?</h2>
+        {% if not is_logged_in() %}
+            <p class="lead mb-4">Join our community today and access all our features</p>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg mr-3">Sign Up Now</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Login</a>
+        {% else %}
+            <p class="lead mb-4">Explore our comprehensive health services</p>
+            <a href="{{ url_for('advice') }}" class="btn btn-outline-light btn-lg">Explore Services</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

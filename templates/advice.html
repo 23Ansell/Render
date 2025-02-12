@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %} courses {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h2 class="h4 mb-0">Environmental Health Conditions</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h5">Air Quality Issues</h3>
+                    <ul>
+                        <li>Smog</li>
+                        <li>Ozone Pollution</li>
+                        <li>Particulate Matter</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Water Quality Issues</h3>
+                    <ul>
+                        <li>Lead Contamination</li>
+                        <li>Chlorine Levels</li>
+                        <li>Microbial Contaminants</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h2 class="h4 mb-0">Seasonal Allergies</h2>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="allergiesAccordion">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link allergy-btn" type="button" data-toggle="collapse" data-target="#springAllergies">
+                                Spring Allergies
+                            </button>
+                        </h3>
+                    </div>
+                    <div id="springAllergies" class="collapse show allergy-section spring" data-parent="#allergiesAccordion">
+                        <div class="card-body">
+                            <p>Common triggers: Tree pollen, grass pollen, mold spores</p>
+                            <p>Symptoms: Sneezing, runny nose, itchy eyes, congestion</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link allergy-btn collapsed" type="button" data-toggle="collapse" data-target="#summerAllergies">
+                                Summer Allergies
+                            </button>
+                        </h3>
+                    </div>
+                    <div id="summerAllergies" class="collapse allergy-section summer" data-parent="#allergiesAccordion">
+                        <div class="card-body">
+                            <p>Common triggers: Grass pollen, weed pollen, outdoor mold</p>
+                            <p>Symptoms: Nasal congestion, sinus pressure, headaches</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link allergy-btn collapsed" type="button" data-toggle="collapse" data-target="#fallAllergies">
+                                Fall Allergies
+                            </button>
+                        </h3>
+                    </div>
+                    <div id="fallAllergies" class="collapse allergy-section fall" data-parent="#allergiesAccordion">
+                        <div class="card-body">
+                            <p>Common triggers: Ragweed pollen, mold spores, dust mites</p>
+                            <p>Symptoms: Itchy throat, watery eyes, coughing, wheezing</p>
+                        </div>
+                    </div>                    
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link allergy-btn collapsed" type="button" data-toggle="collapse" data-target="#winterAllergies">
+                                Winter Allergies
+                            </button>
+                        </h3>
+                    </div>
+                    <div id="winterAllergies" class="collapse allergy-section winter" data-parent="#allergiesAccordion">
+                        <div class="card-body">
+                            <p>Common triggers: Indoor dust, pet dander, indoor mold</p>
+                            <p>Symptoms: Stuffy nose, dry eyes, skin irritation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h2 class="h4 mb-0">Prevention Tips</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h5">Indoor Tips</h3>
+                    <ul>
+                        <li>Use HEPA air purifiers</li>
+                        <li>Keep windows closed during peak pollen times</li>
+                        <li>Maintain indoor humidity between 30-50%</li>
+                        <li>Regular vacuum with HEPA filter</li>
+                        <li>Wash bedding weekly in hot water</li>
+                        <li>Use allergen-proof bed covers</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Outdoor Tips</h3>
+                    <ul>
+                        <li>Monitor local pollen forecasts</li>
+                        <li>Wear sunglasses and hat outdoors</li>
+                        <li>Change clothes after outdoor activities</li>
+                        <li>Avoid going out during peak pollen hours</li>
+                        <li>Use air conditioning in cars</li>
+                        <li>Take allergy medication before symptoms start</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

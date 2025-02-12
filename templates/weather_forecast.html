@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- City Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('weather_forecast') }}" class="form-inline justify-content-center">
+                <input type="text" name="city" class="form-control mr-2" placeholder="Enter city name" value="{{ city }}">
+                <button type="submit" class="btn btn-dark">Get Forecast</button>
+            </form>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        {{ error }}
+        <button type="button" class="close text-muted" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+
+    {% if forecasts %}
+    {% for date, day_forecasts in forecasts.items() %}
+    <div class="card mb-4">
+        <div class="card-header {% if loop.first %}bg-dark text-white{% else %}bg-secondary text-white{% endif %}">
+            <h5 class="mb-0">{{ date }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for forecast in day_forecasts %}
+                <div class="col-md-2 mb-3">
+                    <div class="text-center">
+                        <h6>{{ forecast.time }}</h6>
+                        {% if forecast.icon == 'clear' %}
+                            <i class="fas fa-sun fa-2x mb-2"></i>
+                        {% elif forecast.icon == 'clouds' %}
+                            <i class="fas fa-cloud fa-2x mb-2"></i>
+                        {% elif forecast.icon == 'rain' %}
+                            <i class="fas fa-cloud-rain fa-2x mb-2"></i>
+                        {% elif forecast.icon == 'snow' %}
+                            <i class="fas fa-snowflake fa-2x mb-2"></i>
+                        {% else %}
+                            <i class="fas fa-cloud fa-2x mb-2"></i>
+                        {% endif %}
+                        <h5 class="temperature">{{ forecast.temp }}°C</h5>
+                        <ul class="list-unstyled mt-2 small">
+                            <li>Humidity: {{ forecast.humidity }}%</li>
+                            <li>Wind: {{ forecast.wind }} km/h</li>
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
