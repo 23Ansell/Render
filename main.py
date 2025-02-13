@@ -21,11 +21,6 @@ app.secret_key = uuid.uuid4().hex
 
 # OpenWeatherMap API key
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
-if API_KEY:
-    app.logger.info(f"API Key loaded: {API_KEY[:4]}...{API_KEY[-4:]}")
-else:
-    app.logger.error("No API Key found in environment variables")
-
 
 
 # Function to check if user is logged in
