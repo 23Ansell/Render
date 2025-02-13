@@ -140,17 +140,17 @@
 
 /* Seasonal Background Classes */
 .allergy-section.spring {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/spring.jpg') center/cover;
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/Spring.jpg') center/cover;
 }
 
 .allergy-section.summer {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/summer.jpg') center/cover;
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/Summer.jpg') center/cover;
 }
 
 .allergy-section.fall {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/fall.jpg') center/cover;
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/Fall.jpg') center/cover;
 }
 
 .allergy-section.winter {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/winter.jpg') center/cover;
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/images/Winter.jpg') center/cover;
 }

@@ -21,7 +21,7 @@ API_KEY = os.getenv('OpenWeatherMap_API_KEY')
 # Flask app setup
 app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
-app = Flask(__name__, static_url_path='', static_folder='static')
+
 
 # Function to check if user is logged in
 def is_logged_in():
