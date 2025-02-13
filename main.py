@@ -16,6 +16,7 @@ load_dotenv()
 
 # OpenWeatherMap API key
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
+print(API_KEY)
 
 
 # Flask app setup
@@ -201,10 +202,6 @@ def health_tracking_tool():
 @app.route('/weather_forecast')
 def weather_forecast():
     city = request.args.get('city', 'London')
-    
-    # Debug logging for API key
-    print(f"API Key status: {'Present' if API_KEY else 'Missing'}")
-    print(f"API Key value: {API_KEY}")
 
     # Get 5 day forecast with 3-hour intervals
     url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric'
