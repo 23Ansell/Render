@@ -204,7 +204,7 @@ def weather_forecast():
     city = request.args.get('city', 'London')
 
     # Get 5 day forecast with 3-hour intervals
-    url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric'
+    url = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric'
     
     try:
         response = requests.get(url)
