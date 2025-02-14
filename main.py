@@ -1,5 +1,5 @@
 # Imports
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import uuid
@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 import requests
 from datetime import datetime, date, timedelta
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter.util import get_remote_addres
+import re
 
 
 # Load environment variables
@@ -25,22 +26,38 @@ app.secret_key = uuid.uuid4().hex
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
 
 
+def is_valid_request():
+    """Check if request appears to be from a legitimate client"""
+    user_agent = request.headers.get('User-Agent', '')
+    # Block requests with suspicious patterns
+    suspicious_patterns = [
+        r'python-requests/',
+        r'curl/',
+        r'wget/',
+        r'bot',
+        r'script',
+        r'flood'
+    ]
+    return not any(re.search(pattern, user_agent, re.IGNORECASE) for pattern in suspicious_patterns)
+
+
 def get_real_client_ip():
-    """Get the actual client IP, bypassing proxies"""
+    """Get actual client IP and validate request"""
+    if not is_valid_request():
+        abort(403)  # Forbidden for suspicious requests
+        
     if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
         return request.environ['REMOTE_ADDR']
-    else:
-        # Get the last IP in X-Forwarded-For chain (original client IP)
-        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[-1].strip()
+    return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[-1].strip()
 
 
 limiter = Limiter(
     app=app,
-    key_func=get_real_client_ip,  # Use our custom function instead of get_remote_address
-    default_limits=["200 per day", "50 per hour"],
+    key_func=get_real_client_ip,
+    default_limits=["100 per day", "20 per hour"],
     storage_uri="memory://",
-    strategy="fixed-window",
-    on_breach=lambda limit: flash("You have been temporarily blocked due to too many requests. Please try again in 1 hour.", "danger")
+    strategy="fixed-window-elastic-expiry",  # More aggressive rate limiting
+    on_breach=lambda limit: abort(429)  # Immediate block on breach
 )
 
 
