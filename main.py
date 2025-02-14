@@ -29,16 +29,44 @@ API_KEY = os.getenv('OpenWeatherMap_API_KEY')
 def is_valid_request():
     """Check if request appears to be from a legitimate client"""
     user_agent = request.headers.get('User-Agent', '')
-    # Block requests with suspicious patterns
+    
+    # Expanded suspicious patterns
     suspicious_patterns = [
         r'python-requests/',
         r'curl/',
         r'wget/',
         r'bot',
         r'script',
-        r'flood'
+        r'flood',
+        r'python',
+        r'request',
+        r'http',
+        r'client',
+        r'automation',
+        r'selenium',
+        r'phantomjs',
+        r'spam'
     ]
-    return not any(re.search(pattern, user_agent, re.IGNORECASE) for pattern in suspicious_patterns)
+    
+    # Block if no user agent
+    if not user_agent:
+        return False
+        
+    # Block known suspicious patterns
+    if any(re.search(pattern, user_agent, re.IGNORECASE) for pattern in suspicious_patterns):
+        return False
+        
+    # Additional checks for spam scripts
+    headers = request.headers
+    if (
+        'Accept' not in headers or
+        'Accept-Language' not in headers or
+        'Accept-Encoding' not in headers
+    ):
+        return False
+        
+    # Check request rate
+    return True
 
 
 def get_real_client_ip():
