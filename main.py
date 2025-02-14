@@ -1,5 +1,5 @@
 # Imports
-from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import uuid
@@ -8,9 +8,6 @@ import os
 from dotenv import load_dotenv
 import requests
 from datetime import datetime, date, timedelta
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-import re
 
 
 # Load environment variables
@@ -24,84 +21,6 @@ app.secret_key = uuid.uuid4().hex
 
 # OpenWeatherMap API key
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
-
-
-def is_valid_request():
-    """Check if request appears to be from a legitimate client"""
-    user_agent = request.headers.get('User-Agent', '')
-    
-    # Expanded suspicious patterns
-    suspicious_patterns = [
-        r'python-requests/',
-        r'curl/',
-        r'wget/',
-        r'bot',
-        r'script',
-        r'flood',
-        r'python',
-        r'request',
-        r'http',
-        r'client',
-        r'automation',
-        r'selenium',
-        r'phantomjs',
-        r'spam'
-    ]
-    
-    # Block if no user agent
-    if not user_agent:
-        return False
-        
-    # Block known suspicious patterns
-    if any(re.search(pattern, user_agent, re.IGNORECASE) for pattern in suspicious_patterns):
-        return False
-        
-    # Additional checks for spam scripts
-    headers = request.headers
-    if (
-        'Accept' not in headers or
-        'Accept-Language' not in headers or
-        'Accept-Encoding' not in headers
-    ):
-        return False
-        
-    # Check request rate
-    return True
-
-
-def get_real_client_ip():
-    """Get actual client IP and validate request"""
-    if not is_valid_request():
-        abort(403)  # Forbidden for suspicious requests
-        
-    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-        return request.environ['REMOTE_ADDR']
-    return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[-1].strip()
-
-
-limiter = Limiter(
-    app=app,
-    key_func=get_real_client_ip,
-    default_limits=["100 per day", "20 per hour"],
-    storage_uri="memory://",
-    strategy="fixed-window-elastic-expiry",  # More aggressive rate limiting
-    on_breach=lambda limit: abort(429)  # Immediate block on breach
-)
-
-
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    # Only clear session if user is logged in
-    if 'user_id' in session:
-        session.clear()
-        flash("You have been logged out due to too many requests.", "danger")
-    else:
-        flash("Too many requests from your IP. Please try again later.", "danger")
-    
-    # Return a specific error page for rate limited users
-    return render_template('index.html', 
-                         is_logged_in=False,
-                         rate_limited=True), 429
 
 
 # Function to check if user is logged in
@@ -119,13 +38,11 @@ def get_db_connection():
 
 
 @app.route('/')
-@limiter.limit("100 per day")
 def index():
     return render_template('index.html', is_logged_in=is_logged_in)
 
 
 @app.route('/register', methods=['GET', 'POST'])
-@limiter.limit("20 per minute")
 def register():
     if request.method == 'POST':
         try:
@@ -133,7 +50,7 @@ def register():
             full_name = request.form['name']
             email = request.form['email']
             password = request.form['password']
-            age = request.form.get('age')
+            age = request.form.get('age')  # Using get() instead of direct access
 
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -165,9 +82,9 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("30 per minute")
 def login():
     if request.method == 'POST':
+        # Collecting form data
         email = request.form['email']
         password = request.form['password']
 
@@ -177,6 +94,7 @@ def login():
         user = cursor.fetchone()
         conn.close()
 
+        # Checking if user exists and password is correct
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['full_name'] = user['full_name']
@@ -208,13 +126,13 @@ def account():
 
 # Booking page for risk assessments
 @app.route('/risk_assessments', methods=['GET', 'POST'])
-@limiter.limit("40 per minute")
 def risk_assessments():
     if not is_logged_in():
         flash('Please login to access this page', 'danger')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
+        # Check if the form was submitted to cancel a booking
         if 'cancel_booking_id' in request.form:
             booking_id = request.form['cancel_booking_id']
             user_id = session['user_id']
@@ -232,6 +150,7 @@ def risk_assessments():
             finally:
                 conn.close()
         else:
+            # Collecting form data
             booking_date = request.form['booking_date']
             address = request.form['address']
             user_id = session['user_id']
@@ -257,6 +176,7 @@ def risk_assessments():
 
     conn = get_db_connection()
     cursor = conn.cursor()
+    # Selecting bookings for the logged in user
     cursor.execute('''
         SELECT id, booking_date, address 
         FROM assessmentBookings 
@@ -266,10 +186,7 @@ def risk_assessments():
     bookings = cursor.fetchall()
     conn.close()
     
-    return render_template('risk_assessments.html', 
-                         is_logged_in=is_logged_in, 
-                         today_date=(date.today() + timedelta(days=1)).isoformat(), 
-                         bookings=bookings)
+    return render_template('risk_assessments.html', is_logged_in=is_logged_in, today_date=(date.today() + timedelta(days=1)).isoformat(), bookings=bookings)
 
 
 @app.route('/health_tracking_tool')
@@ -282,9 +199,10 @@ def health_tracking_tool():
 
 
 @app.route('/weather_forecast')
-@limiter.limit("60 per minute")
 def weather_forecast():
     city = request.args.get('city', 'London')
+
+    # Get 5 day forecast with 3-hour intervals
     url = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric'
     
     try:
@@ -292,6 +210,7 @@ def weather_forecast():
         if response.status_code == 200:
             forecast_data = response.json()
             forecasts = {}
+            # Grouping forecast data by date
             for item in forecast_data['list']:
                 date = datetime.fromtimestamp(item['dt']).strftime('%d/%m/%Y')
                 if date not in forecasts:
@@ -304,19 +223,14 @@ def weather_forecast():
                     'description': item['weather'][0]['main'],
                     'icon': item['weather'][0]['main'].lower()
                 })
-            return render_template('weather_forecast.html', 
-                                 is_logged_in=is_logged_in, 
-                                 city=city, 
-                                 forecasts=forecasts, 
-                                 error=None)
+            
+            return render_template('weather_forecast.html', is_logged_in=is_logged_in, city=city, forecasts=forecasts, error=None)
+        
         else:
-            return render_template('weather_forecast.html', 
-                                 is_logged_in=is_logged_in, 
-                                 error="City not found")
+            return render_template('weather_forecast.html', is_logged_in=is_logged_in, error="City not found")
+        
     except requests.RequestException:
-        return render_template('weather_forecast.html', 
-                             is_logged_in=is_logged_in, 
-                             error="Could not fetch weather data")
+        return render_template('weather_forecast.html', is_logged_in=is_logged_in, error="Could not fetch weather data")
 
 
 @app.route('/health')
