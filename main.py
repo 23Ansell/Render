@@ -29,8 +29,17 @@ limiter = Limiter(
     app=app,
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"
+    storage_uri="memory://",
+    strategy="fixed-window", # Add fixed window strategy
+    on_breach=lambda: flash("You have been temporarily blocked due to too many requests. Please try again in 1 hour.", "danger") # Add breach callback
 )
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    flash("Access blocked due to too many requests. Please try again later.", "danger")
+    session.clear() # Log out the user
+    return render_template('index.html', is_logged_in=is_logged_in), 429
 
 
 # Function to check if user is logged in
@@ -246,13 +255,6 @@ def weather_forecast():
         return render_template('weather_forecast.html', 
                              is_logged_in=is_logged_in, 
                              error="Could not fetch weather data")
-
-
-# Add error handler for rate limiting
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    flash("Too many requests. Please try again later.", "danger")
-    return redirect(url_for('index')), 429
 
 
 @app.route('/health')
