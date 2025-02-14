@@ -25,12 +25,21 @@ app.secret_key = uuid.uuid4().hex
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
 
 
+def get_real_client_ip():
+    """Get the actual client IP, bypassing proxies"""
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        return request.environ['REMOTE_ADDR']
+    else:
+        # Get the last IP in X-Forwarded-For chain (original client IP)
+        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[-1].strip()
+
+
 limiter = Limiter(
     app=app,
-    key_func=get_remote_address,
+    key_func=get_real_client_ip,  # Use our custom function instead of get_remote_address
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://",
-    strategy="fixed-window", # Add fixed window strategy
+    strategy="fixed-window",
     on_breach=lambda limit: flash("You have been temporarily blocked due to too many requests. Please try again in 1 hour.", "danger")
 )
 
