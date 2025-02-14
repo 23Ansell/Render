@@ -8,6 +8,17 @@ import os
 from dotenv import load_dotenv
 import requests
 from datetime import datetime, date, timedelta
+from flask import request, abort
+import time
+from functools import wraps
+import logging
+
+
+logging.basicConfig(
+    filename='spam_protection.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
 
 
 # Load environment variables
@@ -21,6 +32,66 @@ app.secret_key = uuid.uuid4().hex
 
 # OpenWeatherMap API key
 API_KEY = os.getenv('OpenWeatherMap_API_KEY')
+
+
+# Store IP addresses and their request counts
+ip_requests = {}
+# Store blocked IPs
+blocked_ips = set()
+# Constants for rate limiting
+MAX_REQUESTS = 50  # Maximum requests allowed
+WINDOW_SECONDS = 60  # Time window in seconds  
+BLOCK_DURATION = 3600  # Block duration in seconds (1 hour)
+
+def check_ip_ban():
+    """Check if IP is banned and clean up expired blocks"""
+    ip = request.remote_addr
+    current_time = time.time()
+    
+    # Remove IPs from blocked list if their block duration expired
+    global blocked_ips
+    blocked_ips = {ip for ip in blocked_ips if ip_requests.get(ip, {}).get('block_until', 0) > current_time}
+    
+    # Return True if IP is blocked
+    return ip in blocked_ips
+
+def rate_limit_ip():
+    """Track request count for IP and block if limit exceeded"""
+    ip = request.remote_addr
+    current_time = time.time()
+
+    if ip not in ip_requests:
+        ip_requests[ip] = {
+            'count': 1,
+            'window_start': current_time
+        }
+    else:
+        # Reset counter if window expired
+        if current_time - ip_requests[ip]['window_start'] > WINDOW_SECONDS:
+            ip_requests[ip]['count'] = 1
+            ip_requests[ip]['window_start'] = current_time
+        else:
+            ip_requests[ip]['count'] += 1
+
+        # Block IP if too many requests
+        if ip_requests[ip]['count'] > MAX_REQUESTS:
+            logging.info(f'IP {ip} blocked for excessive requests')  # Add logging here
+            blocked_ips.add(ip)
+            ip_requests[ip]['block_until'] = current_time + BLOCK_DURATION
+            return True
+
+    return False
+
+def spam_protection(f):
+    """Decorator to add spam protection to routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if check_ip_ban():
+            abort(403)  # Forbidden
+        if rate_limit_ip():
+            abort(429)  # Too Many Requests
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Function to check if user is logged in
@@ -38,11 +109,13 @@ def get_db_connection():
 
 
 @app.route('/')
+@spam_protection
 def index():
     return render_template('index.html', is_logged_in=is_logged_in)
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@spam_protection
 def register():
     if request.method == 'POST':
         try:
@@ -82,6 +155,7 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@spam_protection
 def login():
     if request.method == 'POST':
         # Collecting form data
@@ -115,17 +189,20 @@ def logout():
 
 
 @app.route('/advice')
+@spam_protection
 def advice():
     return render_template('advice.html', is_logged_in=is_logged_in)
 
 
 @app.route('/account')
+@spam_protection
 def account():
     return render_template('account.html', is_logged_in=is_logged_in)
 
 
 # Booking page for risk assessments
 @app.route('/risk_assessments', methods=['GET', 'POST'])
+@spam_protection
 def risk_assessments():
     if not is_logged_in():
         flash('Please login to access this page', 'danger')
@@ -190,6 +267,7 @@ def risk_assessments():
 
 
 @app.route('/health_tracking_tool')
+@spam_protection
 def health_tracking_tool():
     if is_logged_in():
         return render_template('health_tracking_tool.html', is_logged_in=is_logged_in)
@@ -199,6 +277,7 @@ def health_tracking_tool():
 
 
 @app.route('/weather_forecast')
+@spam_protection
 def weather_forecast():
     city = request.args.get('city', 'London')
 
