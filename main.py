@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import requests
 from datetime import datetime, date, timedelta
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_addres
+from flask_limiter.util import get_remote_address
 import re
 
 
