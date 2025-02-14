@@ -54,7 +54,7 @@ def index():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("20 per minute")
 def register():
     if request.method == 'POST':
         try:
@@ -94,7 +94,7 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("10 per minute")
+@limiter.limit("30 per minute")
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -137,7 +137,7 @@ def account():
 
 # Booking page for risk assessments
 @app.route('/risk_assessments', methods=['GET', 'POST'])
-@limiter.limit("20 per minute")
+@limiter.limit("40 per minute")
 def risk_assessments():
     if not is_logged_in():
         flash('Please login to access this page', 'danger')
@@ -211,7 +211,7 @@ def health_tracking_tool():
 
 
 @app.route('/weather_forecast')
-@limiter.limit("30 per minute")
+@limiter.limit("60 per minute")
 def weather_forecast():
     city = request.args.get('city', 'London')
     url = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric'
