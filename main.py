@@ -31,15 +31,23 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://",
     strategy="fixed-window", # Add fixed window strategy
-    on_breach=lambda: flash("You have been temporarily blocked due to too many requests. Please try again in 1 hour.", "danger") # Add breach callback
+    on_breach=lambda limit: flash("You have been temporarily blocked due to too many requests. Please try again in 1 hour.", "danger")
 )
 
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    flash("Access blocked due to too many requests. Please try again later.", "danger")
-    session.clear() # Log out the user
-    return render_template('index.html', is_logged_in=is_logged_in), 429
+    # Only clear session if user is logged in
+    if 'user_id' in session:
+        session.clear()
+        flash("You have been logged out due to too many requests.", "danger")
+    else:
+        flash("Too many requests from your IP. Please try again later.", "danger")
+    
+    # Return a specific error page for rate limited users
+    return render_template('index.html', 
+                         is_logged_in=False,
+                         rate_limited=True), 429
 
 
 # Function to check if user is logged in
