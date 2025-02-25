@@ -8,8 +8,7 @@ import os
 from dotenv import load_dotenv
 import requests
 from datetime import datetime, date, timedelta
-from flask import request, abort
-import time
+from flask import request
 
 
 # Load environment variables
